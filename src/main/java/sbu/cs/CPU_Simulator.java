@@ -1,8 +1,6 @@
 package sbu.cs;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /*
     For this exercise, you must simulate a CPU with a single core.
@@ -23,7 +21,8 @@ public class CPU_Simulator
         long processingTime;
         String ID;
         public Task(String ID, long processingTime) {
-        // TODO
+            this.ID = ID;
+            this.processingTime = processingTime;
         }
 
     /*
@@ -32,7 +31,11 @@ public class CPU_Simulator
     */
         @Override
         public void run() {
-        // TODO
+        try {
+            Thread.sleep(processingTime);
+        } catch (InterruptedException e){
+                e.printStackTrace();
+            }
         }
     }
 
@@ -44,11 +47,35 @@ public class CPU_Simulator
     public ArrayList<String> startSimulation(ArrayList<Task> tasks) {
         ArrayList<String> executedTasks = new ArrayList<>();
 
-        // TODO
+        tasks.sort(Comparator.comparingLong(t -> t.processingTime));
+        for (Task task : tasks){
+            Thread thread = new Thread(task);
+            thread.start();
+            try {
+                thread.join();
+                executedTasks.add(task.ID);
+            }catch (InterruptedException e){
+                e.printStackTrace();
+            }
+        }
+
 
         return executedTasks;
     }
 
     public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        ArrayList<Task>tasks = new ArrayList<>();
+        while(true){
+            try{
+                Task newTask = new Task(in.next(),in.nextInt());
+                tasks.add(newTask);
+            }
+            catch (Exception e){
+                break;
+            }
+        }
+        CPU_Simulator cpu=new CPU_Simulator();
+        cpu.startSimulation(tasks);
     }
 }
